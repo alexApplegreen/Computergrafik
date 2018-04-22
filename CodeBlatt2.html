@@ -169,7 +169,6 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		var p6 = new Point3D(1, 0, -1);		pointarray.push(p6);
 		var p7 = new Point3D(0, 1, -1);		pointarray.push(p7);
 		var p8 = new Point3D(1, 1, -1);		pointarray.push(p8);
-		return pointarray;
     }
 
 	function toRadians(degree) {
@@ -204,11 +203,15 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 								 	 Math.sin(toRadians(rotZ)) * -1, 0, Math.cos(toRadians(rotZ)), 0,
 								 	 0, 0, 0, 1);
 
-		var lookAt = new Matrix4D()
+		var lookAt = new Matrix4D(1, 0, 0, 0,
+								  0, 1, 0, 0,
+							      0, 0, -camZ, 0,
+							  	  0, 0, 0, 1)
 
 		var final = transMat.mulMat(transMatX);
 		final = final.mulMat(transMatY);
 		final = final.mulMat(transMatZ);
+		final = final.mulMat(lookAt);
 
         var pointsTrans = [];
         for (var i = 0; i < pointarray.length; i++) {
@@ -225,15 +228,15 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     function projectPoints (pointarray) {
         var projMat = new Matrix4D(1,0,0,0,
                                    0,1,0,0,
-                                   0,0,0,0,
-                                   0,0,0,1);
+                                   0,0,1,0,
+                                   1/3,1/3,0,0);
 
         var pointsProj = [];
-
-// BEGINN AUFGABE c
-
-// END AUFGABE c
-
+		for (var i = 0; i < pointsProj.length; i++) {
+			var temp = projMat.mulVec(pointsTrans[i]);
+			temp.dehomogen();
+			pointsProj.push(temp);
+		}
         return pointsProj;
     }
 
