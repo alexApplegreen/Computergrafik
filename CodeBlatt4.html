@@ -88,6 +88,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             v.z = this.z - pIn.z;
             return v;
         }
+
     }
 
 
@@ -244,6 +245,16 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         this.B = new Point3D(B.x, B.y, B.z, B.w);
         this.C = new Point3D(C.x, C.y, C.z, C.w);
         this.color = color;
+
+		// TODO get center of gravity of triangles
+		this.getCenter = function() {
+			// calculate Point p
+			var b = new Vector3D(this.B.x, this.B.y, this.B.z);
+			var c = new Vector3D(this.C.x, this.C.y, this.C.z);
+			var p = b.sub(c);
+			var ab = 
+			// calculate alpha
+		}
     }
 
 
@@ -383,11 +394,6 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             drawTriangle(trianglearray[i]);
         }
     }
-
-	// TODO get center of gravity of triangles
-	function getCenter() {
-		
-	}
 
     ///// Canvas and user interaction //////
     // update canvas
