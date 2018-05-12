@@ -61,6 +61,14 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
 
+
+	///// Helper functions /////
+
+	// convert degrees to Radian
+	function toRadian(x) {
+		return x / 180 * Math.PI;
+	}
+
     ///// Point Vector Matrix Methods /////
 
     // 3dpoint prototype
@@ -88,6 +96,14 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             v.z = this.z - pIn.z;
             return v;
         }
+
+		this.dot() = function(scale) {
+			var p = new Point3D();
+			p.x = this.x * scale;
+			p.y = this.y * scale;
+			p.z = this.z * scale;
+			return p;
+		}
 
     }
 
@@ -138,6 +154,10 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         this.sub = function (vIn) {
             return new Vector3D(this.x - vIn.x, this.y - vIn.y, this.z - vIn.z);
         }
+
+		this.length = function() {
+			return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+		}
     }
 
 
@@ -252,8 +272,26 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 			var b = new Vector3D(this.B.x, this.B.y, this.B.z);
 			var c = new Vector3D(this.C.x, this.C.y, this.C.z);
 			var p = b.sub(c);
-			var ab = 
 			// calculate alpha
+			var pb = p.sub(b);
+			var pc = p.sub(c);
+			var ab = a.sub(b);
+			var ac = a.sub(c);
+			// theta is in rad
+			var theta = Math.acos(pb.dot(pc) / pb.length * pc.length());
+			var theta2 = Math.acos(ab.dot(ac) / ab.length() * ac.length());
+			var alpha = pb.length() * pc.length() * Math.sin(theta) /
+						ab.length() * ac.length() * Math.sin(theta2);
+
+			var theta = Math.acos(pa.dot(pc) / pa.length() * pc.length());
+			var beta = pa.length() * pc.length() * Math.sin(theta) /
+					   ab.length() * ac.length() * Math.sin(theta);
+
+			var theta = Math.acos(pb.dot(pa) / pb.length() * pa.length());
+			var gamma = pb.length * pa.length * Math.sin(theta) /
+					    ab.length * ac.length * Math.sin(theta2);
+
+			// TODO return Vector or point here?
 		}
     }
 
