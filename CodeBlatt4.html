@@ -69,6 +69,13 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		return x / 180 * Math.PI;
 	}
 
+	function vecPow(exp) {
+		var x = Math.pow(this.x, exp);
+		var y = Math.pow(this.y, exp);
+		var z = Math.pow(this.z, exp);
+		return new Vector3D(x, y, z);
+	}
+
     ///// Point Vector Matrix Methods /////
 
     // 3dpoint prototype
@@ -97,7 +104,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             return v;
         }
 
-		this.dot() = function(scale) {
+		this.dot = function(scale) {
 			var p = new Point3D();
 			p.x = this.x * scale;
 			p.y = this.y * scale;
@@ -266,17 +273,19 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         this.C = new Point3D(C.x, C.y, C.z, C.w);
         this.color = color;
 
-		// TODO get center of gravity of triangles
 		this.getCenter = function() {
 			// calculate Point p
+			var a = new Vector3D(this.A.x, this.A.y, this.A.z);
 			var b = new Vector3D(this.B.x, this.B.y, this.B.z);
 			var c = new Vector3D(this.C.x, this.C.y, this.C.z);
 			var p = b.sub(c);
 			// calculate alpha
 			var pb = p.sub(b);
+			var pa = p.sub(a);
 			var pc = p.sub(c);
 			var ab = a.sub(b);
 			var ac = a.sub(c);
+			var bc = b.sub(c);
 			// theta is in rad
 			var theta = Math.acos(pb.dot(pc) / pb.length * pc.length());
 			var theta2 = Math.acos(ab.dot(ac) / ab.length() * ac.length());
@@ -291,7 +300,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 			var gamma = pb.length * pa.length * Math.sin(theta) /
 					    ab.length * ac.length * Math.sin(theta2);
 
-			// TODO return Vector or point here?
+			return new Vector3D(alpha * ab, beta * bc, gamma * ac);
 		}
     }
 
@@ -348,11 +357,25 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var trianglesLit = [];
         for (var i = 0; i < trianglearray.length; i++) {
             var triangle = trianglearray[i];
-
+			// RGB vector
             var triColor = new Vector3D(triangle.color[0], triangle.color[1], triangle.color[2]);
             var phongColor = new Vector3D(triangle.color[0], triangle.color[1], triangle.color[2]);
 
-            // TODO calculate lightning here
+			var ca = triColor.mul(cAmbient);
+			var cd = triColor.mul(cDiffuse);
+			var cs = triColor.mul(cSpecular);
+			// cameravector
+			var lightVec = new Vector3D(lightPos.x, lightPos.y, lightPos.z);
+			var v = lightVec.sub(triangle.getCenter());
+			// Lightvector
+			var l = lightVec.sub(triangle.getCenter());
+			l = l.normalize();
+			var camVec = new Vector3D(camPos.x, camPos.y, camPos.z);
+			var n = camVec.normalize();
+			var h = v.add(l);
+			h = h.normalize();
+
+			phongColor = (ca.add(cd.dot(l.dot(n))).add(cs.dot(vecPow(h.dot(n), shine)))).dot(triColor);
 
             trianglesLit.push(new Triangle3D(triangle.A, triangle.B, triangle.C,
 							 [Math.min(255, 255*phongColor.x),
