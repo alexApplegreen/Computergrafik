@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;" 
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;"
     onmousedown="mouse_action(event, 1)" onmouseup="mouse_action(event, -1)"
     onmousemove="mouse_action(event, 0)">
 Your browser does not support the HTML5 canvas tag.</canvas>
@@ -104,7 +104,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             c.y = this.z * v.x - this.x * v.z;
             c.z = this.x * v.y - this.y * v.x;
             return c;
-        }   
+        }
 
         // normalize vector
         this.normalize = function() {
@@ -157,14 +157,14 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
         this.set = function (x, y, value) {
             var idx = x + y * width;
-            this.data[idx] = value; 
+            this.data[idx] = value;
         }
 
         this.setAll = function(value) {
             for (var i = 0; i < this.length; i++) {
                 this.data[i] = value;
             }
-        }   
+        }
     }
 
 
@@ -219,41 +219,35 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             p.z = pIn.x * this.xz + pIn.y * this.yz + pIn.z * this.zz + pIn.w * this.wz;
             p.w = pIn.x * this.xw + pIn.y * this.yw + pIn.z * this.zw + pIn.w * this.ww;
             return p;
-        }   
+        }
     }
 
 
     ///// Drawing Methods /////
 
-    var zBuffer; 
+    var zBuffer;
 
     // initialize z-buffer
     function initZBuf () {
-    // BEGIN AUFGABE 2a)
-
-    // END AUFGABE 2a)
+	    zBuffer = Array2D(size, size, 0);
     }
-        
 
     function resetZBuf () {
-    // BEGIN AUFGABE 2b)
-
-    // END AUFGABE 2b)
+		if (typeof zBuffer === Array2D) {
+			zBuffer.setAll(0);
+		}
     }
 
 
     function drawPointWithZ (x, y, z, color) {
-    // BEGIN AUFGABE 2c)        
-
+		// TODO implement this
        drawPoint(x, y, color);
-
-    // END AUFGABE 2c)
     }
 
 
 
-    var id = ctx.createImageData(1,1); 
-    var d  = id.data;                 
+    var id = ctx.createImageData(1,1);
+    var d  = id.data;
     // Draw point at x,y with given color and radius
     function drawPoint (x, y, color=[0,0,0]) {
         var xc = x + 0.5*size;
@@ -262,7 +256,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         d[1]   = color[1];
         d[2]   = color[2];
         d[3]   = 255;
-        ctx.putImageData( id, xc, yc );  
+        ctx.putImageData( id, xc, yc );
     }
 
 
@@ -284,12 +278,12 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     // Cameraposition
     var camPos = new Point3D(0,0,0);
     // project point
-    function projectPoint (point) { 
+    function projectPoint (point) {
         return frustMat.mulVec(point);
     }
 
     ////// Triangle Methods //////
-     
+
     // 3d triangle
     function Triangle3D (A=new Point3D, B=new Point3D(), C=new Point3D(), color=[0,0,0,255]) {
         // deepcopy, to prevent side effects if triangles would share points
@@ -359,7 +353,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             var CTrans = transMat.mulVec(triangle.C);
             trianglesTrans.push(new Triangle3D(ATrans, BTrans, CTrans, triangle.color));
         }
-        
+
         return trianglesTrans;
     }
 
@@ -371,14 +365,14 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     var lightColor = new Vector3D(1.0,1.0,1.0);
     // light array of triangles
     function lightTriangles (trianglearray) {
-        
+
         var trianglesLit = [];
         for (var i = 0; i < trianglearray.length; i++) {
             var triangle = trianglearray[i];
-            
+
             var triColor = new Vector3D(triangle.color[0], triangle.color[1], triangle.color[2]);
             var phongColor = new Vector3D(triangle.color[0], triangle.color[1], triangle.color[2]);
-            
+
                     // flat shading with Phong reflection model
 
                     var p = new Point3D((triangle.A.x+triangle.B.x+triangle.C.x)/3, (triangle.A.y+triangle.B.y+triangle.C.y)/3, (triangle.A.z+triangle.B.z+triangle.C.z)/3);
@@ -410,13 +404,13 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
             trianglesLit.push(new Triangle3D(triangle.A, triangle.B, triangle.C, [Math.min(255, 255*phongColor.x),  Math.min(255, 255*phongColor.y),  Math.min(255, 255*phongColor.z)]));
         }
-        
+
         return trianglesLit;
     }
 
 
     // project array of triangles
-    function projectTriangles (trianglearray) { 
+    function projectTriangles (trianglearray) {
         var trianglesProj = [];
         for (var i = 0; i < trianglearray.length; i++) {
             var triangle = trianglearray[i];
@@ -426,7 +420,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
             trianglesProj.push(new Triangle3D(ATrans, BTrans, CTrans, triangle.color));
         }
-        
+
         return trianglesProj;
     }
 
@@ -435,8 +429,8 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var A = (triangle.A).dehomogen();
         var B = (triangle.B).dehomogen();
         var C = (triangle.C).dehomogen();
-                
-        // compute barycentric coordinates of point with respect to triangle 
+
+        // compute barycentric coordinates of point with respect to triangle
         function getBar (x, y) {
             var detT = ((B.y - C.y) * (A.x - C.x)) + ((C.x - B.x) * (A.y - C.y));
             var l1 = (((B.y - C.y) * (x - C.x)) + ((C.x - B.x) * (y - C.y))) / detT;
@@ -476,7 +470,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         }
     }
 
-    ///// Canvas and user interaction ////// 
+    ///// Canvas and user interaction //////
     // update canvas
     function updateCanvas () {
         ctx.clearRect(0, 0, size, size);
@@ -487,7 +481,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var trianglesProj = projectTriangles(trianglesLit);
         drawTriangles(trianglesProj);
     }
-        
+
 
     // mouse funcionality
     var mouseDown = false;
@@ -509,7 +503,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             // check if mouse movement is at least one pixel of canvas
             if ((mouseX != mouseXOld) || (mouseY != mouseYOld)) {
                 var x1 = mouseXOld - 0.5*size;
-                var y1 = mouseYOld - 0.5*size; 
+                var y1 = mouseYOld - 0.5*size;
                 var x2 = mouseX - 0.5*size;
                 var y2 = mouseY - 0.5*size;
 
@@ -531,7 +525,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
                 var v2 = computeV(x2, y2, r);
                 var n = v1.cross(v2);
                 n = n.normalize();
-                
+
                 // create rotation matrix corresponding to current mouse movement
                 var theta = Math.acos(v1.dot(v2));
                 var ct = Math.cos(theta);
@@ -616,10 +610,10 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     }
 
 
-    //set correct sizes 
+    //set correct sizes
     function setSizes () {
-        document.getElementById("myCanvas").setAttribute("width", size); 
-        document.getElementById("myCanvas").setAttribute("height", size); 
+        document.getElementById("myCanvas").setAttribute("width", size);
+        document.getElementById("myCanvas").setAttribute("height", size);
         document.getElementById("lsX").setAttribute("min", -0.5*size);
         document.getElementById("lsX").setAttribute("max", 0.5*size);
         document.getElementById("lsX").setAttribute("value", 0.4*size);
@@ -629,7 +623,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         document.getElementById("lsZ").setAttribute("min", -0.7*size);
         document.getElementById("lsZ").setAttribute("max", 0.7*size);
     }
-        
+
 
     // create triangles, init canvas
     setSizes();
@@ -638,7 +632,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     updateCanvas();
 
     // Mesh data
-    function getFacesString () {  
+    function getFacesString () {
         var facesOFF = `186 116 211
 95 251 390
 171 248 92
@@ -1845,7 +1839,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 0.144218 0.332885 0.929278`;
         return pointsOFF;
     }
-</script> 
+</script>
 
 </body>
 </html>
