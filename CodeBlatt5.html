@@ -229,37 +229,41 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
     // initialize z-buffer
     function initZBuf () {
-	    zBuffer = Array2D(size, size, 0);
+	    zBuffer = new Array2D(size, size, -1);
     }
 
     function resetZBuf () {
-		if (typeof zBuffer === Array2D) {
-			zBuffer.setAll(0);
+		if (typeof zBuffer === 'object') {
+			zBuffer.setAll(-1);
 		}
 		else {
 			initZBuf();
+			zBuffer.setAll(-1);
 		}
     }
 
-	// TODO fix endless loop: zBuffer is never instance of array
+	// TODO not quite done. Maybe bc of -size/2?
     function drawPointWithZ (x, y, z, color) {
-		if (typeof zBuffer === Array2D) {
-			if (zBuffer[x][y] === 0) {
+		var absX = x + Math.abs(x);
+		var absY = y + Math.abs(y);
+		if (typeof zBuffer === 'object') {
+			if (zBuffer.get(absX, absY) === -1) {
 	       		drawPoint(x, y, color);
-				zBuffer[x][y] = z;
+				zBuffer.set(absX, absY, z);
 			}
 			else {
-				if (zBuffer[x][y] > z) {
+				if (zBuffer.get(absX, absY) > z) {
 					drawPoint(x, y, color);
-					zBuffer[x][y] = z;
+					zBuffer.set(absX, absY, z);
 				}
 				else {
-					zBuffer[x][y] = z;
+					zBuffer.set(absX, absY, z);
 				}
 			}
 		}
 		else {
-			console.log("Buffer is not initialized");
+			initZBuf();
+			drawPointWithZ(x, y, z, color);
 		}
     }
 
