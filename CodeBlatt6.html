@@ -74,12 +74,15 @@
 
             // Vertex shader program
             const vsSource = `
+              //set precision of floats in vertex buffer
               precision mediump float;
 
+              //read only, declared outside vertex buffer, per vertex scope
               attribute vec4 aVertexPosition;
               attribute vec4 aVertexNormal;
               attribute vec3 aVertexColor;
 
+              //read only, declared outside vertex buffer, global scope
               uniform float uCAmbient;
               uniform float uCDiffuse;
               uniform float uCSpecular;
@@ -97,9 +100,6 @@
               varying vec3 vColor;
               void main(void){
                 gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-                vNormal= vec3(normalize(aVertexPosition).xyz);
-                vColor= vec3(aVertexColor.rgb);
-                vPosition=aVertexPosition;
                 //nur zum test für git
               }
 
