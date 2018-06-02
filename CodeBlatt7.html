@@ -95,6 +95,9 @@
               varying vec3 vNormal;
 
 // BEGIN AUFGABE 2 TEIL 1
+              varying highp vec2 vTextureCoord;
+              attribute vec2 aTextureCoord;
+              varying highp vec3 vLighting;
 
 // END AUFGABE 2 TEIL 1
   
@@ -104,6 +107,7 @@
                   vNormal = normalize((uNormalMatrix * aVertexNormal).xyz);
 
 // BEGIN AUFGABE 2 TEIL 2
+                  vTextureCoord = aTextureCoord;
 
 // END AUFGABE 2 TEIL 2
   
@@ -130,7 +134,9 @@
                 varying vec3 vNormal;
                 varying vec3 vColor;
 // BEGIN AUFGABE 2 TEIL 3
-
+                varying highp vec2 vTextureCoord;
+                uniform sampler2D uSampler;
+                varying highp vec3 vLighting;
 // END AUFGABE 2 TEIL 3
 
                 void main(void) {
@@ -151,7 +157,8 @@
 
 
 // BEGIN AUFGABE 2 TEIL 4
-
+                    highp vec4 texelColor = texture2D(uSampler, vTextureCoord);
+                    gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
 // END AUFGABE 2 TEIL 4
                 }
             `;
