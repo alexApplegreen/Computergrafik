@@ -385,27 +385,25 @@
         }
         
         function smoothMesh () {
-            // TODO
-            for (var i = 0; i < numVerts - 1; i++) {
-                var tmp = getPoint(i);
-                // for each Point sum vertex coordinates of inner ring and divide by number of vertices
-                var val = valence(i);
-                var innerRing = neighbors(i);
-                var sumX, sumY, sumZ = 0;
-                for (var j = 0; j < val; j++) {
-                    sumX += innerRing[j].x;
-                    sumY += innerRing[j].y;
-                    sumZ += innerRing[j].z;
+            for (var i = 0; i < numVerts; i++) {
+                var h0 = out[i];
+                var h = h0;
+                var val = 0;
+                var center = new Point3D(0, 0, 0);
+
+                if (face[out[i]] >= 0 || !fixBoundary) {
+                    do {
+                        var p = getPoint(to[h]);
+                        h = next[opposite[h]];
+                        val++;
+                    }
+                    while (h != h0) {
+                        center = center.mul(1 / val);
+                        var vertex = getPoint(i);
+                        var tmp = vertex.add(center.sub(vertex).mul(0.5));
+                        setPoint(i, tmp);
+                    }
                 }
-                sumX = sumX / val;
-                sumY = sumY / val;
-                sumZ = sumZ / val;
-
-                var neuX = tmp.x + sumX / 2;
-                var neuY = tmp.y + sumY / 2;
-                var neuZ = tmp.z + sumZ / 2;
-
-                setPoint(i, new Point3D(neuX, neuY, neuZ));
             }
         }
 
@@ -417,19 +415,6 @@
             do {
                 var h = next[opposite[h]];
                 result++;
-            } while (h !== start);
-            return result;
-        }
-
-        function neighbors(v) {
-            var middle = getPoint(v);
-            var result = [];
-            var h = out[middle];
-            var start = h;
-            do {
-               var h = next[opposite[h]];
-               var tmp = getPoint(to[h]);
-               result.push(tmp);
             } while (h !== start);
             return result;
         }
