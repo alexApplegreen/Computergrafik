@@ -263,14 +263,21 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
         this.p2 = new Point3D(p2.x, p2.y, p2.z, p2.w);
         this.p3 = new Point3D(p3.x, p3.y, p3.z, p3.w);
 
-// BEGIN AUFGABE a
-       
-// END AUFGABE a
+        this.drawFrame = function(t) {
+            var a = new Line3D(this.p0, this.p1);
+            var b = new Line3D(this.p1, this.p2);
+            var c = new Line3D(this.p2, this.p3);
 
+            // TODO calculate pos of helping lines
 
-// BEGIN AUFGABE b
-       
-// END AUFGABE b
+            drawLine(a);
+            drawLine(b);
+            drawLine(c);
+        }
+
+        this.drawCurve = function() {
+            // TODO
+        }
     }
                 
 
