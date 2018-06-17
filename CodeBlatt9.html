@@ -119,6 +119,10 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
         this.dot = function (v) {
             return this.x * v.x + this.y * v.y + this.z * v.z;
         }
+
+        this.scale = function(s) {
+            return new Vector3D(this.x * s, this.y * s, this.z * s);
+        }
     }
 
 
@@ -268,15 +272,29 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
             var b = new Line3D(this.p1, this.p2);
             var c = new Line3D(this.p2, this.p3);
 
-            // TODO calculate pos of helping lines
-
             drawLine(a);
             drawLine(b);
             drawLine(c);
+
+           
+
         }
 
         this.drawCurve = function() {
-            // TODO
+            for (var i = 0; i < 1; i += 0.002) {
+                var x = Math.pow((1 - i), 3) * p0.x +
+                    3 * Math.pow((1 - i), 2) * i * p1.x +
+                    3 * (1 - i) * Math.pow(i, 3) * p2.x +
+                    Math.pow(i, 3) * p3.x;
+
+                var y = Math.pow((1 - i), 3) * p0.y +
+                    3 * Math.pow((1 - i), 2) * i * p1.y +
+                    3 * (1 - i) * Math.pow(i, 3) * p2.y +
+                    Math.pow(i, 3) * p3.y;
+
+                var p4 = new Point3D(x, y);
+                drawPoint(p4);
+            }
         }
     }
                 
